@@ -3,10 +3,8 @@ import subprocess
 import time
 from datetime import datetime
 
-def file_exists(file_path: str) -> bool:
-    return os.path.exists(file_path)
-
 def convert_to_avi(mp4_path: str, start_time: str = "", end_time: str = "") -> None:
+
     # Video and audio parameters
     video_codec = "mpeg4"
     video_tag = "XVID"
@@ -16,18 +14,16 @@ def convert_to_avi(mp4_path: str, start_time: str = "", end_time: str = "") -> N
     audio_bitrate = "160k"
     audio_rate = "48000"
     audio_channels = "2"
-    
-    
-    # Trim and clean the file path
+
+
     mp4_path = mp4_path.strip().strip('"')
 
-    if not file_exists(mp4_path):
+    if not os.path.exists(mp4_path):
         raise FileNotFoundError(f"File not found: {mp4_path}")
 
     if mp4_path.lower().endswith(".avi"):
         raise ValueError("Input file is already an AVI format")
 
-    # Initialize optional parameters
     duration = None
     layout = "%H:%M:%S"
 
@@ -38,6 +34,7 @@ def convert_to_avi(mp4_path: str, start_time: str = "", end_time: str = "") -> N
 
     # Prepare the output AVI path
     avi_output = os.path.splitext(mp4_path)[0] + ".avi"
+
 
     # First pass
     cmd_pass1 = [
@@ -54,10 +51,11 @@ def convert_to_avi(mp4_path: str, start_time: str = "", end_time: str = "") -> N
         "-pass", "2", "-threads", "0", "-f", "avi", avi_output
     ]
 
+    if end_time:
+        args_pass2 = ["-t", duration] + args_pass2
+    
     if start_time:
         args_pass2 = ["-ss", start_time] + args_pass2
-    if end_time:
-        args_pass2 = args_pass2 + ["-t", duration]
 
     cmd_pass2 = ["ffmpeg"] + args_pass2
 
@@ -82,6 +80,6 @@ if __name__ == "__main__":
 
     try:
         convert_to_avi(mp4_path, start_time, end_time)
-        print("Conversion completed!")
+        print("Conversion completed successfully!")
     except Exception as e:
         print(f"An error occurred during conversion: {e}")
