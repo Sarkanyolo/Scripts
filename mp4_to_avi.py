@@ -26,8 +26,11 @@ def convert_to_avi(mp4_path: str, start_time: str = "", end_time: str = "") -> N
 
     duration = None
     layout = "%H:%M:%S"
+    
+    if not start_time:
+        start_time = "0:00:00"
 
-    if start_time and end_time:
+    if end_time:
         start = datetime.strptime(start_time, layout)
         end = datetime.strptime(end_time, layout)
         duration = str(end - start)
@@ -53,11 +56,8 @@ def convert_to_avi(mp4_path: str, start_time: str = "", end_time: str = "") -> N
 
     if end_time:
         args_pass2 = ["-t", duration] + args_pass2
-    
-    if start_time:
-        args_pass2 = ["-ss", start_time] + args_pass2
 
-    cmd_pass2 = ["ffmpeg"] + args_pass2
+    cmd_pass2 = ["ffmpeg", "-ss", start_time] + args_pass2
 
     # Run the first pass
     result = subprocess.run(cmd_pass1, capture_output=True)
@@ -69,8 +69,6 @@ def convert_to_avi(mp4_path: str, start_time: str = "", end_time: str = "") -> N
     if result.returncode != 0:
         raise RuntimeError(f"Failed 2nd pass: {result.stderr.decode()}")
 
-    # Clean up
-    os.remove("ffmpeg2pass-0.log")
     os.remove(mp4_path)
 
 if __name__ == "__main__":
@@ -83,3 +81,6 @@ if __name__ == "__main__":
         print("Conversion completed successfully!")
     except Exception as e:
         print(f"An error occurred during conversion: {e}")
+    
+    # Clean up
+    os.remove("ffmpeg2pass-0.log")
