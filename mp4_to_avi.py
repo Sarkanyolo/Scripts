@@ -72,9 +72,10 @@ def convert_to_avi(mp4_path: str, start_time: str = "", end_time: str = "") -> N
     os.remove(mp4_path)
 
 if __name__ == "__main__":
-    mp4_path = input("Enter the path to the MP4 file: ").strip()
-    start_time = input("Enter the timestamp where content begins (optional, e.g., 00:02:23): ").strip()
-    end_time = input("Enter the timestamp where content ends (optional, e.g., 00:27:12): ").strip()
+    mp4_path = input("Path to the MP4 file: ").strip()
+    start_time = input("Timestamp where content begins (optional, e.g., 00:02:23): ").strip()
+    end_time = input("Timestamp where content ends (optional, e.g., 00:27:12): ").strip()
+    print("Conversion started")
 
     try:
         convert_to_avi(mp4_path, start_time, end_time)
